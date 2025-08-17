@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product • ZYPTO BAZZAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="index.html">ZYPTO BAZZAR</a>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#featured">Shop</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="product-page">
+    <div class="breadcrumbs">Home / <span id="bc-title">Product</span></div>
+
+    <div class="product-meta">
+      <div class="gallery">
+        <div class="main card">
+          <img id="main-img" src="" alt="Product">
+        </div>
+        <div class="thumbs"></div>
+      </div>
+
+      <div class="card product-panel">
+        <h2 id="pp-title">Title</h2>
+        <div class="price" id="pp-price">₹ 0</div>
+        <p id="pp-desc">Description...</p>
+        <div class="qty">
+          <label for="qty">Quantity</label>
+          <input id="qty" class="input" type="number" min="1" value="1">
+        </div>
+        <button class="btn" id="orderBtn">Order on WhatsApp</button>
+      </div>
+    </div>
+  </main>
+
+  <button id="wa-fab" class="fab-whatsapp" title="Chat on WhatsApp">🟢</button>
+
+  <footer class="footer">
+    <div class="container">
+      <div>ZYPTO BAZZAR © 2025</div>
+    </div>
+  </footer>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin • ZYPTO BAZZAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+  <!-- 🔒 Admin Panel Lock -->
+<div id="lockScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000000d0;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="background:white;padding:30px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.4);text-align:center;width:300px;">
+    <h2 style="margin-bottom:15px;">Enter Admin PIN</h2>
+    <input type="password" id="pinInput" placeholder="PIN" maxlength="6"
+           style="padding:10px;width:90%;margin-bottom:15px;border:1px solid #aaa;border-radius:5px;">
+    <br>
+    <button onclick="checkPin()" style="padding:10px 20px;border:none;background:maroon;color:white;border-radius:5px;cursor:pointer;">Unlock</button>
+    <p id="errorMsg" style="color:red;margin-top:10px;display:none;">Wrong PIN, try again!</p>
+  </div>
+</div>
+
+<script>
+  // 🛡️ Change default PIN here
+  const ADMIN_PIN = "1234";  
+
+  function checkPin() {
+    const input = document.getElementById("pinInput").value;
+    if (input === ADMIN_PIN) {
+      document.getElementById("lockScreen").style.display = "none";
+    } else {
+      document.getElementById("errorMsg").style.display = "block";
+      document.getElementById("pinInput").value = "";
+    }
+  }
+</script>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="index.html">ZYPTO BAZZAR</a>
+      <nav>
+        <ul>
+          <li><a href="index.html">View Store</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2 style="color:var(--gold);margin:16px 0">Product Admin</h2>
+    <div class="admin-grid">
+      <div class="card" style="padding:16px">
+        <form id="prodForm" class="form">
+          <div>
+            <label>Product ID (unique, lowercase with dashes)</label>
+            <input class="input" id="f_id" placeholder="e.g. saree-kesar-05" required>
+          </div>
+          <div>
+            <label>Title</label>
+            <input class="input" id="f_title" required>
+          </div>
+          <div>
+            <label>Category</label>
+            <input class="input" id="f_cat" placeholder="Saree/Lehenga/Kurta/Anarkali">
+          </div>
+          <div>
+            <label>Price (₹)</label>
+            <input class="input" id="f_price" type="number" min="0" required>
+          </div>
+          <div>
+            <label>Description</label>
+            <textarea class="input" id="f_desc" rows="4"></textarea>
+          </div>
+          <div>
+            <label>Image 1 URL</label>
+            <input class="input" id="f_img1" required>
+          </div>
+          <div>
+            <label>Image 2 URL</label>
+            <input class="input" id="f_img2" required>
+          </div>
+          <div>
+            <label>Image 3 URL</label>
+            <input class="input" id="f_img3" required>
+          </div>
+          <div>
+            <label>Image 4 URL</label>
+            <input class="input" id="f_img4" required>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn" type="submit">Save / Update</button>
+            <button class="btn outline" id="btnDelete" type="button">Delete</button>
+            <span id="msg" class="badge success" style="display:none;margin-left:10px">Saved</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="padding:16px">
+        <h3 style="margin-top:0">Products</h3>
+        <table class="table" id="tbl"></table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const store = (function(){{
+      const key='zypto_products_v1';
+      return {{
+        all(){{
+          const raw=localStorage.getItem(key);
+          if(!raw) return [];
+          try{{return JSON.parse(raw)}}catch(e){{return []}}
+        }},
+        save(list){{localStorage.setItem(key, JSON.stringify(list))}},
+        upsert(p){{
+          const list=this.all();
+          const i=list.findIndex(x=>x.id===p.id);
+          if(i>-1) list[i]=p; else list.push(p);
+          this.save(list);
+        }},
+        remove(id){{
+          this.save(this.all().filter(x=>x.id!==id));
+        }}
+      }}
+    }})();
+
+    function renderTable(){{
+      const list = store.all();
+      const rows = [`<tr><th>ID</th><th>Title</th><th>Price</th><th>Category</th><th>Open</th></tr>`]
+        .concat(list.map(p=>`<tr>
+          <td>${{p.id}}</td>
+          <td>${{p.title}}</td>
+          <td>₹ ${{p.price}}</td>
+          <td>${{p.category||''}}</td>
+          <td><a class="badge" href="product.html?id=${{encodeURIComponent(p.id)}}">View</a></td>
+        </tr>`));
+      document.getElementById('tbl').innerHTML = rows.join('');
+    }}
+
+    function loadToForm(p){{
+      f_id.value = p.id||'';
+      f_title.value = p.title||'';
+      f_cat.value = p.category||'';
+      f_price.value = p.price||0;
+      f_desc.value = p.description||'';
+      f_img1.value = p.images?.[0]||'';
+      f_img2.value = p.images?.[1]||'';
+      f_img3.value = p.images?.[2]||'';
+      f_img4.value = p.images?.[3]||'';
+    }}
+
+    document.getElementById('prodForm').addEventListener('submit', (e)=>{{
+      e.preventDefault();
+      const p = {{
+        id: f_id.value.trim(),
+        title: f_title.value.trim(),
+        category: f_cat.value.trim(),
+        price: Number(f_price.value||0),
+        description: f_desc.value.trim(),
+        images: [f_img1.value, f_img2.value, f_img3.value, f_img4.value]
+      }};
+      if(!p.id) return alert('ID is required');
+      store.upsert(p);
+      document.getElementById('msg').style.display='inline-block';
+      setTimeout(()=>document.getElementById('msg').style.display='none',1500);
+      renderTable();
+    }});
+
+    document.getElementById('btnDelete').addEventListener('click',()=>{{
+      const id = f_id.value.trim();
+      if(!id) return alert('Enter Product ID to delete');
+      if(confirm('Delete product '+id+'?')){{ store.remove(id); renderTable(); }}
+    }});
+
+    // click a row to load
+    document.getElementById('tbl').addEventListener('click',(e)=>{{
+      const tr = e.target.closest('tr'); if(!tr || tr.rowIndex===0) return;
+      const id = tr.children[0].textContent;
+      const p = store.all().find(x=>x.id===id);
+      if(p) loadToForm(p);
+    }});
+
+    // Init with seed if empty
+    (function seed(){{
+      if(!localStorage.getItem('zypto_products_v1')){{
+        localStorage.setItem('zypto_products_v1', JSON.stringify([]));
+      }}
+      if(JSON.parse(localStorage.getItem('zypto_products_v1')).length===0){{
+        // minimal sample to start; store page will seed via front script as well
+        localStorage.setItem('zypto_products_v1', JSON.stringify([]));
+      }}
+    }})();
+
+    renderTable();
+  </script>
+</body>
+</html>
